@@ -1,13 +1,13 @@
 package main
 
 import (
-    "./server"
     "fmt"
 )
 
 func main() {
     fmt.Printf("Hello, World\n")
-    s := server.NewServer()
+    db := NewDb()
+    server := NewServer(db)
     // quit := make(chan bool)
-    s.Start()
+    server.Start()
 }

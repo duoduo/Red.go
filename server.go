@@ -1,18 +1,17 @@
-package server
+package main
 
 import (
     "fmt" 
     "net"
     "os"
-    "./client"
 )
 
 type Server struct {
-    
+    Db *Db
 }
 
-func NewServer() *Server {
-    return new(Server)
+func NewServer(db *Db) *Server {
+    return &Server{Db: db}
 }
 
 func (s *Server) Start() {
@@ -45,8 +44,11 @@ func (s *Server) Start() {
 func (s *Server) handleConn(conn net.Conn) {
     fmt.Printf("NewConnFromCreateClient: ", conn)
     
-    c := client.NewClient(conn)
+    c := NewClient(s.Db, conn)
     fmt.Printf("NewClient: ", c)
     
-    c.ReadQuery()
+    // c.InjectDb(db)
+
+    c.ProcessRequest()
+    fmt.Printf("Client DUMP: %#v", c)
 }
