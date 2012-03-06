@@ -173,8 +173,21 @@ func (c *Client) ReadRequest() {
     c.Request = request
 }
 
-func (c *Client) ProcessRequest() {
-    c.ReadRequest()
-    c.Command = CommandFromRequest(c.Request)
-    c.Command.Process(c)
+func (c *Client) ProcessRequest(mainCh chan int) {
+    for {
+        // Read will block until something is ready to be ready.
+        c.ReadRequest()
+        c.Command = CommandFromRequest(c.Request)
+        // Alert that we are starting processing.
+        <- mainCh
+        c.Command.Process(c)
+        go func() {
+            // Alert that we are done!
+            // Next goroutine can take over.
+            mainCh <- 1
+        }()
+        //fmt.Printf("BEFORE RECEIVING")
+        //fmt.Printf("RECEIVED IT!")
+        // Take out 
+    }
 }

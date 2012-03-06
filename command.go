@@ -40,13 +40,14 @@ func (comm *StringCommand) Set(client *Client) {
     client.Db.Set(client.Request.Argv[2], client.Request.Argv[3])
     // Reply
     _, _ = client.Conn.Write([]byte("+OK\r\n"))
-    client.Conn.Close()
+    //client.Conn.Close()
 }
 
 func (comm *StringCommand) Get(client *Client) {
     buf := client.Db.Get(client.Request.Argv[2])
     fmt.Printf("\n\nGET RESPONSE: %s", string(buf))
-    client.Conn.Close()
+    _, _ = client.Conn.Write([]byte("+OK\r\n"))
+    //client.Conn.Close()
 }
 
 func CommandFromRequest(r *Request) Command {
