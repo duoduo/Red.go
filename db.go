@@ -20,7 +20,8 @@ func (db *Db) Set(key []byte, value []byte) {
 
 func (db *Db) Get(key []byte) []byte {
     fmt.Printf("\n\n\ndb.dict: ", db.dict)
-    return db.dict[db.hashKey(key)]
+    data := db.dict[db.hashKey(key)]
+    return data
 }
 
 func (db *Db) hashKey(key []byte) string {
