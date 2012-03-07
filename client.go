@@ -101,13 +101,18 @@ func NewRequestFromConn(conn net.Conn) {
 type Client struct {
     Conn net.Conn
     Request *Request
+    Response *Response
     Command Command
     Db *Db
 }
 
 func NewClient(db *Db, conn net.Conn) *Client {
     //conn.SetReadBuffer(READ_BUF)
-    c := Client{Db: db, Conn: conn}
+    c := Client{
+        Db: db,
+        Conn: conn,
+        Response: NewResponse(conn),
+    }
     return &c
 }
 

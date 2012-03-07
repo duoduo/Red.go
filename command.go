@@ -39,13 +39,13 @@ func (comm *StringCommand) Process(client *Client) {
 func (comm *StringCommand) Set(client *Client) {
     client.Db.Set(client.Request.Argv[2], client.Request.Argv[3])
     // Reply
-    _, _ = client.Conn.Write([]byte("+OK\r\n"))
-    //client.Conn.Close()
+    client.Response.Ok()
 }
 
 func (comm *StringCommand) Get(client *Client) {
     buf := client.Db.Get(client.Request.Argv[2])
     fmt.Printf("\n\nGET RESPONSE: %s", string(buf))
+    // client.Response.Set(buf)
     _, _ = client.Conn.Write([]byte("+OK\r\n"))
     //client.Conn.Close()
 }

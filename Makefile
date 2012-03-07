@@ -6,6 +6,7 @@ TARG=red
 GOFILES=\
     db.go\
     server.go\
+    response.go\
     client.go\
     command.go\
     red.go\
