@@ -20,9 +20,9 @@ type StringCommand struct {
 }
 
 func (comm *StringCommand) Process(client *Client) {
-    fmt.Printf("\n\nSTRINGTYPE: %s", strings.ToLower(string(client.Request.Argv[1])))
+    fmt.Printf("\n\nSTRINGTYPE: %s", strings.ToLower(string(client.Request.Argv[0])))
     // Determine string command type.
-    switch strings.ToLower(string(client.Request.Argv[1])) {
+    switch strings.ToLower(string(client.Request.Argv[0])) {
         case "set":
             comm.Set(client)
         case "get":
@@ -37,13 +37,14 @@ func (comm *StringCommand) Process(client *Client) {
 }
 
 func (comm *StringCommand) Set(client *Client) {
-    client.Db.Set(client.Request.Argv[2], client.Request.Argv[3])
+    fmt.Printf("\n\nSettings: %s %s", client.Request.Argv[1], client.Request.Argv[2])
+    client.Db.Set(client.Request.Argv[1], client.Request.Argv[2])
     // Reply
     client.Response.Ok()
 }
 
 func (comm *StringCommand) Get(client *Client) {
-    buf := client.Db.Get(client.Request.Argv[2])
+    buf := client.Db.Get(client.Request.Argv[1])
     fmt.Printf("\n\nGET RESPONSE: %s", string(buf))
     client.Response.SendBulk(buf)
     //_, _ = client.Conn.Write([]byte("+OK\r\n"))

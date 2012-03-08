@@ -13,6 +13,7 @@ const (
     CR_BYTE byte = byte('\r')
     LF_BYTE byte = byte('\n')
     COUNT_BYTE byte = byte('*')
+    ARG_BYTE byte = byte('$')
     READ_BUF = (1024 * 16)
     MAX_ARGC = (1024 * 1024)
 )
@@ -166,11 +167,13 @@ func (c *Client) ReadRequest() {
         lineBuf, isPrefix, err = reader.ReadLine() 
         fmt.Printf("ERROR: ", err)
         fmt.Printf("\n\nBufLength: %d Line %d: %s", len(lineBuf), line, lineBuf)
-
-        request.Argv[line] = lineBuf        
-        // New line if isPrefix == false
-        if !isPrefix {
-            line++
+        if lineBuf[0] != ARG_BYTE {
+            fmt.Printf("Setting ARGV%s", line)
+            request.Argv[line] = lineBuf
+            // New line if isPrefix == false
+            if !isPrefix {
+                line++
+            }
         }
     }
 
