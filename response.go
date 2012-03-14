@@ -20,16 +20,23 @@ func (r *Response) Send(data []byte) {
 }
 
 func (r *Response) Ok() {
+    // Status Reply
     r.Send([]byte("+OK\r\n"))
+}
+
+func (r *Response) Nil() {
+    // Nil Reply
+    r.Send([]byte("$-1\r\n"))
 }
 
 func (r *Response) SendBulk(data []byte) {
     n := len(data)
     fmt.Printf("Len: ", []byte(strconv.Itoa(n)))
+    // Num of Args
     d := []byte{'$'}
-    //d = append(d, byte('$'))
     d = append(d, []byte(strconv.Itoa(n))...)
     d = append(d, []byte("\r\n")...)
+    // Argument Data
     d = append(d, data...)
     d = append(d, []byte("\r\n")...)
     fmt.Printf("SendBulk: %s", d)

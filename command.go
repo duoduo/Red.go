@@ -45,6 +45,11 @@ func (comm *StringCommand) Set(client *Client) {
 
 func (comm *StringCommand) Get(client *Client) {
     buf := client.Db.Get(client.Request.Argv[1])
+    if (len(buf) == 0) {
+        client.Response.Nil()
+        return
+    }
+    
     fmt.Printf("\n\nGET RESPONSE: %s", string(buf))
     client.Response.SendBulk(buf)
     //_, _ = client.Conn.Write([]byte("+OK\r\n"))
