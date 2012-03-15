@@ -103,7 +103,7 @@ type Client struct {
     Conn net.Conn
     Request *Request
     Response *Response
-    Command Command
+    Command CommandFunc
     Db *Db
 }
 
@@ -186,9 +186,10 @@ func (c *Client) ProcessRequest(mainCh chan int) {
         // Read will block until something is ready to be ready.
         c.ReadRequest()
         c.Command = CommandFromRequest(c.Request)
+        //ProcessCommand(c)
         // Alert that we are starting processing.
         <- mainCh
-        c.Command.Process(c)
+        c.Command(c)
         go func() {
             // Alert that we are done!
             // Next goroutine can take over.
