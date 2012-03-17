@@ -14,7 +14,11 @@ type CommandFunc func(client *Client)
 var commandMap = map[string] CommandFunc {
     "set": Set, 
     "get": Get,
+    "del": Delete,
 }
+
+// Strings
+// -------
 
 func Set(client *Client) {
     fmt.Printf("\n\nSettings: %s %s", client.Request.Argv[1], client.Request.Argv[2])
@@ -34,6 +38,14 @@ func Get(client *Client) {
     client.Response.SendBulk(buf)
     //_, _ = client.Conn.Write([]byte("+OK\r\n"))
     //client.Conn.Close()
+}
+
+// Base
+// ----
+
+func Delete(client *Client) {
+    client.Db.Delete(client.Request.Argv[1])
+    client.Response.Ok()
 }
 
 func Unknown(client *Client) {

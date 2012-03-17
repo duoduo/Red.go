@@ -24,6 +24,10 @@ func (db *Db) Get(key []byte) []byte {
     return data
 }
 
+func (db *Db) Delete(key []byte) {
+    db.dict[db.hashKey(key)] = nil, false
+}
+
 func (db *Db) hashKey(key []byte) string {
     return string(key)
 }
