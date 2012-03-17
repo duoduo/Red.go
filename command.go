@@ -11,10 +11,6 @@ import (
 // ordinary functions as Command functions.
 type CommandFunc func(client *Client)
 
-func (comm CommandFunc) Process(client *Client) {
-    comm(client)
-}
-
 var commandMap = map[string] CommandFunc {
     "set": Set, 
     "get": Get,
@@ -44,7 +40,7 @@ func Unknown(client *Client) {
     // Send err
 }
 
-func CommandFromRequest(r *Request) func(client *Client) {
+func CommandFromRequest(r *Request) CommandFunc {
     key := strings.ToLower(string(r.Argv[0]))
     comm, ok := commandMap[key]
     if !ok {
