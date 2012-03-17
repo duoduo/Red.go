@@ -29,6 +29,10 @@ func (r *Response) Nil() {
     r.Send([]byte("$-1\r\n"))
 }
 
+func (r *Response) Error(message string) {
+    r.Send([]byte(fmt.Sprintf("-ERR %s \r\n", message)));
+}
+
 func (r *Response) SendBulk(data []byte) {
     n := len(data)
     fmt.Printf("Len: ", []byte(strconv.Itoa(n)))

@@ -38,6 +38,7 @@ func Get(client *Client) {
 
 func Unknown(client *Client) {
     // Send err
+    client.Response.Error(fmt.Sprintf("unknown command '%s'", string(client.Request.Argv[0])))
 }
 
 func CommandFromRequest(r *Request) CommandFunc {
