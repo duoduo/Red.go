@@ -5,6 +5,7 @@ import (
     "fmt"
     //"./client"
     "strings"
+    //"os"
 )
 
 // The CommandFunc type is an adapter to allow the use of
@@ -12,6 +13,8 @@ import (
 type CommandFunc func(client *Client)
 
 var commandMap = map[string] CommandFunc {
+    "shutdown": Shutdown,
+    "ping": Ping,
     "set": Set, 
     "get": Get,
     "del": Delete,
@@ -43,6 +46,10 @@ func Get(client *Client) {
 // Base
 // ----
 
+func Ping(client *Client) {
+    client.Response.Pong()
+}
+
 func Delete(client *Client) {
     client.Db.Delete(client.Request.Argv[1])
     client.Response.Ok()
@@ -51,6 +58,14 @@ func Delete(client *Client) {
 func Unknown(client *Client) {
     // Send err
     client.Response.Error(fmt.Sprintf("unknown command '%s'", string(client.Request.Argv[0])))
+}
+
+// Server
+// ------
+
+func Shutdown(client *Client) {
+    // @todo Tell server to stop gracefully...
+    client.Server.Stop()
 }
 
 func CommandFromRequest(r *Request) CommandFunc {

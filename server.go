@@ -4,6 +4,7 @@ import (
     "fmt" 
     "net"
     "os"
+    "runtime/pprof"
 )
 
 type Server struct {
@@ -25,10 +26,10 @@ func (s *Server) Start() {
     // Allows for multiple clients to be initialized.
     // Only allows one client to actually read/write to db.
     mainCh := make(chan int)
-    go func() {
+    /*go func() {
         // Tell the first client it can run.
         mainCh <- 1
-    }()
+    }()*/
     
     // Listen
     fmt.Printf("Listening on port 6380\n")
@@ -41,24 +42,32 @@ func (s *Server) Start() {
             os.Exit(1)
         }
 
-        fmt.Printf("New connection from: %s\n", conn.RemoteAddr())
+        //fmt.Printf("New connection from: %s\n", conn.RemoteAddr())
         
         // Launch some go routine with connection
-        fmt.Printf("NewConnFromStart: ", conn)
-        fmt.Printf("NewConnFromStartWithPointer: ", &conn)
-
+        //fmt.Printf("NewConnFromStart: ", conn)
+        //fmt.Printf("NewConnFromStartWithPointer: ", &conn)
+        //go func() {
+        //    c := NewClient(s, s.Db, conn)
+        //    c.Response.Pong()
+        //}()
         go s.handleConn(conn, mainCh)
     }
 }
 
+func (s *Server) Stop() {
+    pprof.StopCPUProfile()
+    os.Exit(0)
+}
+
 func (s *Server) handleConn(conn net.Conn, mainCh chan int) {
-    fmt.Printf("NewConnFromCreateClient: ", conn)
+    //fmt.Printf("NewConnFromCreateClient: ", conn)
     
-    c := NewClient(s.Db, conn)
-    fmt.Printf("NewClient: ", c)
-    
+    c := NewClient(s, s.Db, conn)
+    //fmt.Printf("NewClient: ", c)
+
     // c.InjectDb(db)
 
     c.ProcessRequest(mainCh)
-    fmt.Printf("Client DUMP: %#v", c)
+    //fmt.Printf("Client DUMP: %#v", c)
 }

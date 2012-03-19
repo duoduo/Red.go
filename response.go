@@ -24,6 +24,10 @@ func (r *Response) Ok() {
     r.Send([]byte("+OK\r\n"))
 }
 
+func (r *Response) Pong() {
+    r.Send([]byte("+PONG\r\n"))
+}
+
 func (r *Response) Nil() {
     // Nil Reply
     r.Send([]byte("$-1\r\n"))
