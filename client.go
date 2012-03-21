@@ -187,18 +187,14 @@ func (c *Client) ProcessRequest(mainCh chan int) {
 		}
 
 		c.Command = CommandFromRequest(c.Request)
-		//ProcessCommand(c)
+		
 		// Alert that we are starting processing.
 		<- mainCh
-		//c.Response.Pong()
 		c.Command(c)
 		go func() {
 		// Alert that we are done!
 		// Next goroutine can take over.
 			mainCh <- 1
 		}()
-		//fmt.Printf("BEFORE RECEIVING")
-		//fmt.Printf("RECEIVED IT!")
-		// Take out 
 	}
 }
