@@ -7,6 +7,11 @@ import(
     "strconv"
 )
 
+
+var shared = map[string] []byte {
+    "pong": []byte("+PONG\r\n"),
+}
+
 type Response struct {
     Conn net.Conn
 }
@@ -25,7 +30,7 @@ func (r *Response) Ok() {
 }
 
 func (r *Response) Pong() {
-    r.Send([]byte("+PONG\r\n"))
+    r.Send(shared["pong"])
 }
 
 func (r *Response) Nil() {

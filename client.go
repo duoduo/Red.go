@@ -137,8 +137,8 @@ func (c *Client) ReadRequest() bool {
 	if err != nil || isPrefix || lineBuf[0] != COUNT_BYTE {
 		return false
 	}
-	fmt.Printf("ReadLine: ", lineBuf)
-	fmt.Printf("ReadLine String: %s", lineBuf)
+	//fmt.Printf("ReadLine: ", lineBuf)
+	//fmt.Printf("ReadLine String: %s", lineBuf)
 	/*for n, err := reader.Read(readBuf[:]); err == nil {
 	    if n == 0 {
 	        break
@@ -147,7 +147,7 @@ func (c *Client) ReadRequest() bool {
 
 	// Validate num of args.
 	request.Argc, err = strconv.ParseUint(string(lineBuf[1:]), 10, 64)
-	fmt.Printf("\n\nARGC: ", request.Argc)
+	//fmt.Printf("\n\nARGC: ", request.Argc)
 	if err != nil || request.Argc > MAX_ARGC {
 
 	}
@@ -161,10 +161,10 @@ func (c *Client) ReadRequest() bool {
 		}
 
 		lineBuf, isPrefix, err = reader.ReadLine()
-		fmt.Printf("ERROR: ", err)
-		fmt.Printf("\n\nBufLength: %d Line %d: %s", len(lineBuf), line, lineBuf)
+		//fmt.Printf("ERROR: ", err)
+		//fmt.Printf("\n\nBufLength: %d Line %d: %s", len(lineBuf), line, lineBuf)
 		if lineBuf[0] != ARG_BYTE {
-			fmt.Printf("Setting ARGV%s", line)
+			//fmt.Printf("Setting ARGV%s", line)
 			request.Argv[line] = lineBuf
 			// New line if isPrefix == false
 			if !isPrefix {
@@ -173,7 +173,7 @@ func (c *Client) ReadRequest() bool {
 		}
 	}
 
-	fmt.Printf("\n\nREQUEST DUMP: %+v", request)
+	//fmt.Printf("\n\nREQUEST DUMP: %+v", request)
 	c.Request = request
 	return true
 }
@@ -189,13 +189,14 @@ func (c *Client) ProcessRequest(mainCh chan int) {
 		c.Command = CommandFromRequest(c.Request)
 		//ProcessCommand(c)
 		// Alert that we are starting processing.
-		//<- mainCh
+		<- mainCh
+		//c.Response.Pong()
 		c.Command(c)
-		//go func() {
+		go func() {
 		// Alert that we are done!
 		// Next goroutine can take over.
-		//mainCh <- 1
-		//}()
+			mainCh <- 1
+		}()
 		//fmt.Printf("BEFORE RECEIVING")
 		//fmt.Printf("RECEIVED IT!")
 		// Take out 

@@ -26,10 +26,10 @@ func (s *Server) Start() {
     // Allows for multiple clients to be initialized.
     // Only allows one client to actually read/write to db.
     mainCh := make(chan int)
-    /*go func() {
+    go func() {
         // Tell the first client it can run.
         mainCh <- 1
-    }()*/
+    }()
     
     // Listen
     fmt.Printf("Listening on port 6380\n")
