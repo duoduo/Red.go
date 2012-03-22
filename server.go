@@ -4,6 +4,7 @@ import (
     "fmt" 
     "net"
     "os"
+    "runtime"
     "runtime/pprof"
 )
 
@@ -21,15 +22,6 @@ func (s *Server) Start() {
         fmt.Printf("Can't start on 6380\n")
         os.Exit(1)
     }
-
-    // Main Channel, "single threaded".
-    // Allows for multiple clients to be initialized.
-    // Only allows one client to actually read/write to db.
-    mainCh := make(chan int)
-    go func() {
-        // Tell the first client it can run.
-        mainCh <- 1
-    }()
     
     // Listen
     fmt.Printf("Listening on port 6380\n")
@@ -42,16 +34,19 @@ func (s *Server) Start() {
         }
 
         //fmt.Printf("New connection from: %s\n", conn.RemoteAddr())
-        go s.handleConn(conn, mainCh)
+        go s.handleConn(conn)
     }
 }
 
 func (s *Server) Stop() {
+    stats := new(runtime.MemStats)
+    runtime.ReadMemStats(stats)
+    fmt.Printf("Stats: (%+v", stats)
     pprof.StopCPUProfile()
     os.Exit(0)
 }
 
-func (s *Server) handleConn(conn net.Conn, mainCh chan int) {    
+func (s *Server) handleConn(conn net.Conn) {    
     c := NewClient(s, s.Db, conn)
-    c.ProcessRequest(mainCh)
+    c.ProcessRequest()
 }

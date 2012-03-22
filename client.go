@@ -127,7 +127,7 @@ func (c *Client) ReadRequest() bool {
 	return true
 }
 
-func (c *Client) ProcessRequest(mainCh chan int) {
+func (c *Client) ProcessRequest() {
 	for {
 		// Read will block until something is ready to be ready.
 		ok := c.ReadRequest()
@@ -136,14 +136,6 @@ func (c *Client) ProcessRequest(mainCh chan int) {
 		}
 
 		c.Command = CommandFromRequest(c.Request)
-		
-		// Alert that we are starting processing.
-		<- mainCh
 		c.Command(c)
-		go func() {
-		// Alert that we are done!
-		// Next goroutine can take over.
-			mainCh <- 1
-		}()
 	}
 }
