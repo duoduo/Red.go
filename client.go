@@ -25,12 +25,6 @@ type Request struct {
 }
 
 func NewRequestFromConn(conn net.Conn) {
-	//n, err := c.Conn.Read(buf[:])
-	//fmt.Printf("N bytes: ", n)
-	//fmt.Printf("Buf: %q", buf)
-	//if err != nil {
-	//    
-	//}
 	var request *Request = new(Request)
 	var lineBuf []byte
 	var isPrefix bool // isPrefix specifies is line was fully read.
@@ -43,11 +37,6 @@ func NewRequestFromConn(conn net.Conn) {
 	}
 	fmt.Printf("ReadLine: ", lineBuf)
 	fmt.Printf("ReadLine String: %s", lineBuf)
-	/*for n, err := reader.Read(readBuf[:]); err == nil {
-	    if n == 0 {
-	        break
-	    }
-	}*/
 
 	// Validate num of args.
 	argc, err := strconv.ParseUint(string(lineBuf[1:]), 10, 64)
@@ -73,26 +62,6 @@ func NewRequestFromConn(conn net.Conn) {
 			line++
 		}
 	}
-
-	// Loop through num args
-	//var fullBuf [READ_BUF]byte
-	//_, _ = reader.Read(fullBuf[:])
-	//fmt.Printf("ReadLine String FULL: %s", fullBuf)
-
-	// Allocate storage
-	//object := db.NewStringObject()
-
-	// 
-
-	// Redis Unified Request Protocol
-	/*if query[0] != "*" {
-	      // Err
-	  }
-
-	  newlinepos := strings.Index(query, "\r")
-	  argc := query[1:newlinepos]
-	  fmt.Printf("NEW LINE POS: %s", newlinepos)
-	  fmt.Printf("ARGC: %s", argc)*/
 }
 
 // Client
@@ -117,16 +86,7 @@ func NewClient(server *Server, db *Db, conn net.Conn) *Client {
 }
 
 func (c *Client) ReadRequest() bool {
-	//var buf [READ_BUF]byte
-	//n, err := c.Conn.Read(buf[:])
-	//fmt.Printf("N bytes: ", n)
-	//fmt.Printf("Buf: %q", buf)
-	//if err != nil {
-	//    
-	//}
 
-	//query := string(buf[0:n])
-	//fmt.Printf("Query: %s", query)
 	var request *Request = new(Request)
 	var lineBuf []byte
 	var isPrefix bool // isPrefix specifies is line was fully read.
@@ -137,13 +97,6 @@ func (c *Client) ReadRequest() bool {
 	if err != nil || isPrefix || lineBuf[0] != COUNT_BYTE {
 		return false
 	}
-	//fmt.Printf("ReadLine: ", lineBuf)
-	//fmt.Printf("ReadLine String: %s", lineBuf)
-	/*for n, err := reader.Read(readBuf[:]); err == nil {
-	    if n == 0 {
-	        break
-	    }
-	}*/
 
 	// Validate num of args.
 	request.Argc, err = strconv.ParseUint(string(lineBuf[1:]), 10, 64)
@@ -161,10 +114,7 @@ func (c *Client) ReadRequest() bool {
 		}
 
 		lineBuf, isPrefix, err = reader.ReadLine()
-		//fmt.Printf("ERROR: ", err)
-		//fmt.Printf("\n\nBufLength: %d Line %d: %s", len(lineBuf), line, lineBuf)
 		if lineBuf[0] != ARG_BYTE {
-			//fmt.Printf("Setting ARGV%s", line)
 			request.Argv[line] = lineBuf
 			// New line if isPrefix == false
 			if !isPrefix {
@@ -173,7 +123,6 @@ func (c *Client) ReadRequest() bool {
 		}
 	}
 
-	//fmt.Printf("\n\nREQUEST DUMP: %+v", request)
 	c.Request = request
 	return true
 }

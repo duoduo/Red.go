@@ -33,7 +33,6 @@ func (s *Server) Start() {
     
     // Listen
     fmt.Printf("Listening on port 6380\n")
-    // fmt.Printf("value or whatev: ", listener)
     for {
         // var read = true
         conn, err := listener.Accept()
@@ -43,14 +42,6 @@ func (s *Server) Start() {
         }
 
         //fmt.Printf("New connection from: %s\n", conn.RemoteAddr())
-        
-        // Launch some go routine with connection
-        //fmt.Printf("NewConnFromStart: ", conn)
-        //fmt.Printf("NewConnFromStartWithPointer: ", &conn)
-        //go func() {
-        //    c := NewClient(s, s.Db, conn)
-        //    c.Response.Pong()
-        //}()
         go s.handleConn(conn, mainCh)
     }
 }
@@ -60,14 +51,7 @@ func (s *Server) Stop() {
     os.Exit(0)
 }
 
-func (s *Server) handleConn(conn net.Conn, mainCh chan int) {
-    //fmt.Printf("NewConnFromCreateClient: ", conn)
-    
+func (s *Server) handleConn(conn net.Conn, mainCh chan int) {    
     c := NewClient(s, s.Db, conn)
-    //fmt.Printf("NewClient: ", c)
-
-    // c.InjectDb(db)
-
     c.ProcessRequest(mainCh)
-    //fmt.Printf("Client DUMP: %#v", c)
 }

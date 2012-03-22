@@ -23,11 +23,6 @@ func main() {
             log.Fatal(err)
         }
         pprof.StartCPUProfile(f)
-        /*go func() {
-            time.Sleep(9e9)
-            pprof.StopCPUProfile()
-            os.Exit(0)
-        }()*/
     }
 
     db := NewDb()
