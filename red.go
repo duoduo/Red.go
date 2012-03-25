@@ -13,7 +13,7 @@ import (
 var cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
 
 func main() {
-    runtime.GOMAXPROCS(1)
+    runtime.GOMAXPROCS(4)
     fmt.Printf("Hello, World\n")
     flag.Parse()
     if *cpuprofile != "" {

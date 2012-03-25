@@ -24,45 +24,6 @@ type Request struct {
 	Argv [][]byte
 }
 
-func NewRequestFromConn(conn net.Conn) {
-	var request *Request = new(Request)
-	var lineBuf []byte
-	var isPrefix bool // isPrefix specifies is line was fully read.
-	var err error
-	reader := bufio.NewReaderSize(conn, READ_BUF)
-
-	lineBuf, isPrefix, err = reader.ReadLine()
-	if err != nil || isPrefix || lineBuf[0] != COUNT_BYTE {
-		// log.Exit(1)
-	}
-	fmt.Printf("ReadLine: ", lineBuf)
-	fmt.Printf("ReadLine String: %s", lineBuf)
-
-	// Validate num of args.
-	argc, err := strconv.ParseUint(string(lineBuf[1:]), 10, 64)
-	fmt.Printf("\n\nARGC: ", argc)
-	if err != nil || argc > MAX_ARGC {
-
-	}
-
-	// 2 lines per arg, 1st line is command, 2 line is value.
-	request.Argv = make([][]byte, argc*2)
-	var line uint = 0
-	for {
-		lineBuf, isPrefix, err = reader.ReadLine()
-		if len(lineBuf) <= 0 {
-			break
-		}
-
-		fmt.Printf("\n\nBufLength: %d Line %d: %s", len(lineBuf), line, lineBuf)
-
-		request.Argv[line] = lineBuf
-		// New line if isPrefix == false
-		if !isPrefix {
-			line++
-		}
-	}
-}
 
 // Client
 type Client struct {
@@ -75,7 +36,6 @@ type Client struct {
 }
 
 func NewClient(server *Server, db *Db, conn net.Conn) *Client {
-	//conn.SetReadBuffer(READ_BUF)
 	c := Client{
 		Server:   server,
 		Db:       db,
@@ -85,24 +45,21 @@ func NewClient(server *Server, db *Db, conn net.Conn) *Client {
 	return &c
 }
 
-func (c *Client) ReadRequest() bool {
-
-	var request *Request = new(Request)
+func (c *Client) ReadRequest(reader *bufio.Reader) bool {
 	var lineBuf []byte
-	var isPrefix bool // isPrefix specifies is line was fully read.
+	var isPrefix bool
 	var err error
-	reader := bufio.NewReaderSize(c.Conn, READ_BUF)
-
 	lineBuf, isPrefix, err = reader.ReadLine()
 	if err != nil || isPrefix || lineBuf[0] != COUNT_BYTE {
 		return false
 	}
 
+	var request *Request = new(Request)
 	// Validate num of args.
 	request.Argc, err = strconv.ParseUint(string(lineBuf[1:]), 10, 64)
 	//fmt.Printf("\n\nARGC: ", request.Argc)
 	if err != nil || request.Argc > MAX_ARGC {
-
+		return false
 	}
 
 	// 2 lines per arg, 1st line is command, 2 line is value.
@@ -128,14 +85,24 @@ func (c *Client) ReadRequest() bool {
 }
 
 func (c *Client) ProcessRequest() {
+	reader := bufio.NewReaderSize(c.Conn, READ_BUF)
 	for {
 		// Read will block until something is ready to be ready.
-		ok := c.ReadRequest()
+		ok := c.ReadRequest(reader)
 		if !ok {
 			continue
 		}
 
 		c.Command = CommandFromRequest(c.Request)
 		c.Command(c)
-	}
+
+		// For now, force close conn when there is no more data.
+		b, _ := reader.Peek(1)
+		if len(b) == 0 {
+			break
+		}
+ 	}
+
+ 	fmt.Printf("Closing conn %s\n", c.Conn.RemoteAddr())
+ 	c.Conn.Close()
 }

@@ -46,7 +46,7 @@ func (s *Server) Stop() {
     os.Exit(0)
 }
 
-func (s *Server) handleConn(conn net.Conn) {    
+func (s *Server) handleConn(conn net.Conn) {
     c := NewClient(s, s.Db, conn)
     c.ProcessRequest()
 }

@@ -46,9 +46,10 @@ func (r *Response) SendBulk(data []byte) {
     n := len(data)
     fmt.Printf("Len: ", []byte(strconv.Itoa(n)))
     // Num of Args
-    d := []byte{'$'}
-    d = append(d, []byte(strconv.Itoa(n))...)
-    d = append(d, []byte("\r\n")...)
+    //d := []byte{'$'}
+    //d = append(d, []byte(strconv.Itoa(n))...)
+    //d = append(d, []byte("\r\n")...)
+    d := []byte("$" + strconv.Itoa(n) + "\r\n")
     // Argument Data
     d = append(d, data...)
     d = append(d, []byte("\r\n")...)
