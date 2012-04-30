@@ -17,6 +17,8 @@ func NewServer(db *Db) *Server {
 }
 
 func (s *Server) Start() {
+    connCh := make(chan net.Conn, 1000)
+    go s.handleConn(connCh)
     listener, err := net.Listen("tcp", "0.0.0.0:6380")
     if err != nil {
         fmt.Printf("Can't start on 6380\n")
@@ -33,8 +35,7 @@ func (s *Server) Start() {
             os.Exit(1)
         }
 
-        //fmt.Printf("New connection from: %s\n", conn.RemoteAddr())
-        go s.handleConn(conn)
+        connCh <- conn
     }
 }
 
@@ -46,7 +47,10 @@ func (s *Server) Stop() {
     os.Exit(0)
 }
 
-func (s *Server) handleConn(conn net.Conn) {
-    c := NewClient(s, s.Db, conn)
-    c.ProcessRequest()
+func (s *Server) handleConn(connCh chan net.Conn) {
+    for {
+        conn := <-connCh
+        c := NewClient(s, s.Db, conn)
+        c.ProcessRequest()
+    }
 }
