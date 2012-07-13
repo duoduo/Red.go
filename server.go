@@ -34,7 +34,7 @@ func (s *Server) Start() {
         }
 
         //fmt.Printf("New connection from: %s\n", conn.RemoteAddr())
-        go func() {
+        func() {
             for {
                 conn.Write([]byte("+PONG\r\n"))
             }
@@ -50,9 +50,4 @@ func (s *Server) Stop() {
     fmt.Printf("Stats: (%+v", stats)
     pprof.StopCPUProfile()
     os.Exit(0)
-}
-
-func (s *Server) handleConn(conn net.Conn) {
-    c := NewClient(s, s.Db, conn)
-    c.ProcessRequest()
 }
