@@ -34,7 +34,13 @@ func (s *Server) Start() {
         }
 
         //fmt.Printf("New connection from: %s\n", conn.RemoteAddr())
-        go s.handleConn(conn)
+        go func() {
+            for {
+                conn.Write([]byte("+PONG\r\n"))
+            }
+        }()
+        //s.handleConn(conn)
+
     }
 }
 
